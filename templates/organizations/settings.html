@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="page-heading"><div class="eyebrow">WORKSPACE PREFERENCES</div><h1>Settings</h1><p class="muted mb-0">Manage defaults for {{ organization.name }}.</p></div>
+<div class="settings-grid">
+  <section class="form-panel"><div class="form-section-title">Inventory preferences</div><p class="muted">Choose the default quantity at which a product is marked as low stock. Individual products can override this value.</p><form method="post">{% csrf_token %}<div class="mb-4"><label class="form-label" for="{{ form.default_low_stock_threshold.id_for_label }}">Default low-stock threshold</label>{{ form.default_low_stock_threshold }}{% for error in form.default_low_stock_threshold.errors %}<div class="field-error">{{ error }}</div>{% endfor %}<div class="form-text">Products at or below this quantity appear in the low-stock watch.</div></div><button class="btn btn-primary" type="submit">Save settings</button></form></section>
+  <section class="form-panel"><div class="form-section-title">Workspace details</div><div class="settings-detail"><span>Organization</span><strong>{{ organization.name }}</strong></div><div class="settings-detail"><span>Signed-in user</span><strong>{{ user.username }}</strong></div><div class="settings-detail"><span>Account email</span><strong>{{ user.email|default:"Not set" }}</strong></div><div class="settings-note">Your inventory is isolated to this organization’s workspace.</div></section>
+</div>
+{% endblock %}

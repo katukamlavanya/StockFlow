@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Inventory{% endblock %}
+{% block content %}
+<div class="page-heading d-flex flex-wrap align-items-end justify-content-between gap-3"><div><div class="eyebrow">PRODUCT CATALOG</div><h1>Inventory</h1><p class="muted mb-0">Manage products, quantities, and stock levels.</p></div><a href="{% url 'inventory:create' %}" class="btn btn-primary">＋ Add product</a></div>
+<section class="panel">
+  <form method="get" class="filter-bar">
+    <div class="search-box"><span>⌕</span><input type="search" name="q" value="{{ query }}" class="form-control" placeholder="Search by product name or SKU"></div>
+    <select name="stock" class="form-select filter-select" aria-label="Stock status"><option value="">All stock levels</option><option value="low" {% if stock_filter == 'low' %}selected{% endif %}>Low stock</option><option value="healthy" {% if stock_filter == 'healthy' %}selected{% endif %}>In good shape</option></select>
+    <button class="btn btn-outline-primary" type="submit">Filter</button>
+    {% if query or stock_filter %}<a href="{% url 'inventory:list' %}" class="btn btn-light">Clear</a>{% endif %}
+  </form>
+  {% if products %}<div class="table-responsive"><table class="table align-middle inventory-table mb-0"><thead><tr><th>Product</th><th>SKU</th><th>Quantity</th><th>Threshold</th><th>Cost price</th><th>Selling price</th><th>Status</th><th class="text-end">Actions</th></tr></thead><tbody>
+  {% for product in products %}<tr><td><div class="product-cell"><div class="product-avatar">{{ product.name|first|upper }}</div><div><div class="fw-semibold">{{ product.name }}</div>{% if product.description %}<div class="small text-secondary text-truncate description-cell">{{ product.description|truncatechars:45 }}</div>{% endif %}</div></div></td><td class="text-secondary">{{ product.sku }}</td><td class="fw-semibold">{{ product.quantity }}</td><td>{{ product.effective_low_stock_threshold }}</td><td>{% if product.cost_price != None %}₹{{ product.cost_price|floatformat:2 }}{% else %}—{% endif %}</td><td>{% if product.selling_price != None %}₹{{ product.selling_price|floatformat:2 }}{% else %}—{% endif %}</td><td>{% if product.is_low_stock %}<span class="status-badge status-low">Low stock</span>{% else %}<span class="status-badge status-good">In stock</span>{% endif %}</td><td><div class="action-group"><a href="{% url 'inventory:edit' product.pk %}" class="btn btn-sm btn-light">Edit</a><a href="{% url 'inventory:delete' product.pk %}" class="btn btn-sm btn-outline-danger">Delete</a></div></td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<div class="empty-state"><div class="empty-symbol">▦</div><h3>No products found</h3><p>{% if query or stock_filter %}Try changing your search or filter.{% else %}Add your first product to start tracking stock.{% endif %}</p>{% if not query and not stock_filter %}<a href="{% url 'inventory:create' %}" class="btn btn-primary">Add first product</a>{% endif %}</div>{% endif %}
+  <div class="table-footer"><span>{{ products|length }} product{{ products|length|pluralize }} shown</span><span>StockFlow inventory</span></div>
+</section>
+{% endblock %}
